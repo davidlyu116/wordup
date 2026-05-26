@@ -31,9 +31,10 @@ export function useProgress() {
 
   const resetWord = useCallback((level, word) => {
     setProgress(prev => {
-      const levelData = { ...(prev[level] || {}) }
-      delete levelData[word]
-      const next = { ...prev, [level]: levelData }
+      const next = {
+        ...prev,
+        [level]: { ...(prev[level] || {}), [word]: { correct: 1, total: 1 } }
+      }
       save(next)
       return next
     })

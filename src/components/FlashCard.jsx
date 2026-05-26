@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 
 const BATCH_SIZE = 20
-const SESSION_KEY = 'wordup_flash_session'
 
 function shuffle(arr) {
   const a = [...arr]
@@ -12,12 +11,12 @@ function shuffle(arr) {
   return a
 }
 
-function loadSession() {
-  try { return JSON.parse(sessionStorage.getItem(SESSION_KEY)) } catch { return null }
+function loadSession(key) {
+  try { return JSON.parse(sessionStorage.getItem(key)) } catch { return null }
 }
 
-function saveSession(data) {
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(data))
+function saveSession(key, data) {
+  sessionStorage.setItem(key, JSON.stringify(data))
 }
 
 function buildBatch(words, batchIndex) {
@@ -28,8 +27,8 @@ function buildBatch(words, batchIndex) {
     : shuffle(words).slice(0, BATCH_SIZE)
 }
 
-function getInitial(words) {
-  const s = loadSession()
+function getInitial(words, key) {
+  const s = loadSession(key)
   const wordSet = new Set(words.map(w => w.word))
   if (s?.deck && s.deck.every(c => wordSet.has(c.word))) {
     return { deck: s.deck, index: s.index || 0, batchIndex: s.batchIndex || 0 }
@@ -47,8 +46,9 @@ function StarIcon({ filled }) {
   )
 }
 
-export default function FlashCard({ words, isBookmarked, onToggleBookmark }) {
-  const [init]       = useState(() => getInitial(words))
+export default function FlashCard({ words, isBookmarked, onToggleBookmark, sessionKey = 'all' }) {
+  const storageKey   = `wordup_flash_${sessionKey}`
+  const [init]       = useState(() => getInitial(words, storageKey))
   const [deck,       setDeck]       = useState(init.deck)
   const [index,      setIndex]      = useState(init.index)
   const [batchIndex, setBatchIndex] = useState(init.batchIndex)
@@ -61,8 +61,8 @@ export default function FlashCard({ words, isBookmarked, onToggleBookmark }) {
   const bookmarked = isBookmarked?.(card?.word) ?? false
 
   useEffect(() => {
-    saveSession({ deck, index, batchIndex })
-  }, [deck, index, batchIndex])
+    saveSession(storageKey, { deck, index, batchIndex })
+  }, [deck, index, batchIndex, storageKey])
 
   function goTo(next) {
     setIndex(next)
@@ -94,16 +94,19 @@ export default function FlashCard({ words, isBookmarked, onToggleBookmark }) {
   }
 
   if (batchDone) {
+    const isSmallPool = words.length <= BATCH_SIZE
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 px-4">
         <div className="text-6xl">🎉</div>
         <div className="text-center">
           <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">這批完成！</h2>
-          <p className="text-slate-400 dark:text-slate-500 text-sm mt-1">繼續下一批隨機單字</p>
+          <p className="text-slate-400 dark:text-slate-500 text-sm mt-1">
+            {isSmallPool ? '繼續練習同一批單字' : '繼續下一批隨機單字'}
+          </p>
         </div>
         <button onClick={nextBatch}
           className="w-full max-w-xs py-4 rounded-2xl bg-brand-500 text-white font-semibold text-lg active:scale-95 transition-transform outline-none focus:outline-none">
-          繼續下 {BATCH_SIZE} 個單字 →
+          {isSmallPool ? '再練一遍 →' : `繼續下 ${BATCH_SIZE} 個單字 →`}
         </button>
       </div>
     )

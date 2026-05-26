@@ -51,6 +51,7 @@ export default function FlashTab({ words, level, isBookmarked, onToggleBookmark,
           words={mode === 'bookmarked' ? bookmarkedWords : words}
           isBookmarked={isBm}
           onToggleBookmark={toggleBm}
+          sessionKey={mode}
         />
       )}
     </div>
