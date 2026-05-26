@@ -56,6 +56,8 @@ export default function Quiz({ words, direction, count = 20, onBack, record }) {
 
   function choose(opt) {
     if (selected !== null) return
+    // 移除 iOS focus 殘留，防止 focus 狀態轉移到下一題同位置的按鈕
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
     setSelected(opt)
     const correct = opt === question.answer
     if (correct) {
@@ -163,11 +165,11 @@ export default function Quiz({ words, direction, count = 20, onBack, record }) {
           return (
             <button key={opt} onClick={() => choose(opt)}
               className={[
-                'w-full py-4 px-5 rounded-2xl text-left font-medium text-base transition-all duration-200 active:scale-[0.98]',
+                'w-full py-4 px-5 rounded-2xl text-left font-medium text-base transition-all duration-150 outline-none focus:outline-none active:scale-[0.98]',
                 isAnswer ? 'bg-green-500 text-white shadow-md' : '',
                 isWrong  ? 'bg-rose-500 text-white animate-shake' : '',
-                !isSelected && selected !== null && !isAnswer ? 'opacity-50' : '',
-                selected === null ? 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 hover:border-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20' : '',
+                !isSelected && selected !== null && !isAnswer ? 'opacity-40' : '',
+                selected === null ? 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 active:bg-slate-100 dark:active:bg-slate-700' : '',
               ].filter(Boolean).join(' ')}>
               {opt}
             </button>
