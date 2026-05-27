@@ -10,7 +10,17 @@ function ResetIcon() {
   )
 }
 
-export default function ProgressTab({ level, stats, recentWrong, onResetWord }) {
+function BookmarkIcon({ filled }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24"
+      fill={filled ? 'currentColor' : 'none'}
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  )
+}
+
+export default function ProgressTab({ level, stats, recentWrong, onResetWord, onToggleBookmark, isBookmarked }) {
   const pct = stats.total > 0 ? Math.round((stats.practiced / stats.total) * 100) : 0
 
   return (
@@ -64,13 +74,22 @@ export default function ProgressTab({ level, stats, recentWrong, onResetWord }) 
                     <p className="font-semibold text-slate-800 dark:text-white text-sm">{w.word}</p>
                     <p className="text-xs text-slate-400 dark:text-slate-500">{w.zh}</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                       acc >= 70 ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
                                 : 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
                     }`}>
                       {acc}%
                     </span>
+                    <button
+                      onClick={() => onToggleBookmark?.(w.word)}
+                      className={`w-7 h-7 flex items-center justify-center rounded-full transition-all active:scale-90 outline-none focus:outline-none
+                        ${isBookmarked?.(w.word)
+                          ? 'text-brand-500 dark:text-brand-400'
+                          : 'text-slate-300 dark:text-slate-600 active:text-brand-400'
+                        }`}>
+                      <BookmarkIcon filled={isBookmarked?.(w.word)} />
+                    </button>
                     <button
                       onClick={() => onResetWord?.(w.word)}
                       className="w-7 h-7 flex items-center justify-center rounded-full text-slate-400 dark:text-slate-500

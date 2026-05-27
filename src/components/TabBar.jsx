@@ -8,7 +8,8 @@ const TABS = [
 
 export default function TabBar({ active, onChange }) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-20 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+    <nav className="shrink-0 z-20 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="flex max-w-sm mx-auto">
         {TABS.map(t => {
           const Icon = t.icon

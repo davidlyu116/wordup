@@ -66,9 +66,9 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="h-screen flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-900">
       {/* Top bar */}
-      <header className="sticky top-0 z-10 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-200 dark:border-slate-800">
+      <header className="shrink-0 z-10 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-sm mx-auto flex items-center justify-between px-4 py-3">
           <span className="text-base font-black text-brand-500 tracking-tight">WordUp</span>
           <button onClick={toggleDark}
@@ -79,46 +79,50 @@ export default function App() {
         </div>
       </header>
 
-      {/* Tab content */}
-      <main className="max-w-sm mx-auto pb-24">
-        {tab === 'home' && (
-          <HomeTab level={level} stats={stats} onNavigate={handleTabChange} />
-        )}
-        {tab === 'flash' && (
-          <FlashTab
-            words={words}
-            level={level}
-            isBookmarked={isBookmarked}
-            onToggleBookmark={toggleBookmark}
-            bookmarkedWords={bookmarkedWords}
-          />
-        )}
-        {tab === 'quiz' && (
-          <QuizTab
-            words={words}
-            level={level}
-            record={record}
-            progress={progress}
-            bookmarkedWords={bookmarkedWords}
-          />
-        )}
-        {tab === 'progress' && (
-          <ProgressTab
-            level={level}
-            stats={stats}
-            recentWrong={recentWrong}
-            onResetWord={(word) => resetWord(level, word)}
-          />
-        )}
-        {tab === 'settings' && (
-          <SettingsTab
-            level={level}
-            setLevel={setLevel}
-            dark={dark}
-            toggleDark={toggleDark}
-            resetLevel={resetLevel}
-          />
-        )}
+      {/* Tab content — only this area scrolls */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-sm mx-auto pb-4">
+          {tab === 'home' && (
+            <HomeTab level={level} stats={stats} onNavigate={handleTabChange} />
+          )}
+          {tab === 'flash' && (
+            <FlashTab
+              words={words}
+              level={level}
+              isBookmarked={isBookmarked}
+              onToggleBookmark={toggleBookmark}
+              bookmarkedWords={bookmarkedWords}
+            />
+          )}
+          {tab === 'quiz' && (
+            <QuizTab
+              words={words}
+              level={level}
+              record={record}
+              progress={progress}
+              bookmarkedWords={bookmarkedWords}
+            />
+          )}
+          {tab === 'progress' && (
+            <ProgressTab
+              level={level}
+              stats={stats}
+              recentWrong={recentWrong}
+              onResetWord={(word) => resetWord(level, word)}
+              onToggleBookmark={(word) => toggleBookmark(level, word)}
+              isBookmarked={(word) => isBookmarked(level, word)}
+            />
+          )}
+          {tab === 'settings' && (
+            <SettingsTab
+              level={level}
+              setLevel={setLevel}
+              dark={dark}
+              toggleDark={toggleDark}
+              resetLevel={resetLevel}
+            />
+          )}
+        </div>
       </main>
 
       <TabBar active={tab} onChange={handleTabChange} />
